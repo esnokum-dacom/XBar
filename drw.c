@@ -1,5 +1,50 @@
 #include "drw.h"
 
+unsigned long hex_to_xcolor(Display *dpy, const char *hex) {
+  XColor color;
+  Colormap cmap = DefaultColormap(dpy, DefaultScreen(dpy));
+  XParseColor(dpy, cmap, hex, &color);
+  XAllocColor(dpy, cmap, &color);
+  return color.pixel;
+}
+
+void load_colors(Display *dpy, ColorScheme *col) {
+  unsigned long fg = hex_to_xcolor(dpy, "#ffffff");
+  unsigned long bg = hex_to_xcolor(dpy, "#151515");
+
+  col->background = bg;
+  col->foreground = fg;
+  for (int i = 0; i < 16; i++)
+    col->colors[i] = (i == 0) ? bg : fg;
+
+  char path[256];
+  snprintf(path, sizeof(path), "%s/.cache/wal/colors", getenv("HOME"));
+  FILE *f = fopen(path, "r");
+  if (!f)
+    return;
+
+  char line[16];
+  int i = 0;
+  while (fgets(line, sizeof(line), f) && i < 16) {
+    line[strcspn(line, "\n")] = 0;
+    col->colors[i++] = hex_to_xcolor(dpy, line);
+  }
+  fclose(f);
+
+  col->background = col->colors[0];
+  col->foreground = col->colors[15];
+}
+
+void xcolor_to_xftcolor(Display *dpy, Visual *vis, Colormap cmap,
+                        unsigned long pixel, XftColor *xft) {
+  XColor xc = {0};
+  xc.pixel = pixel;
+  XQueryColor(dpy, cmap, &xc);
+  XRenderColor rc = {
+      .red = xc.red, .green = xc.green, .blue = xc.blue, .alpha = 0xffff};
+  XftColorAllocValue(dpy, vis, cmap, &rc, xft);
+}
+
 void draw_wrapped_text(Display *dpy, XftDraw *xdraw, XftFont *font,
                        XftColor *color, int x, int y, int max_width,
                        const char *text) {

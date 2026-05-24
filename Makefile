@@ -1,6 +1,6 @@
 CC      = gcc
 TARGET  = XBar 
-SRCS    = main.c drw.c src/modules/wks.c
+SRCS    = main.c drw.c src/modules/wks.c src/modules/sigr1.c
 LIBS    = -lX11 -lXinerama -lImlib2 -lfontconfig $(shell pkg-config --cflags --libs xft)
 CFLAGS  = -Wall -Wextra 
 BINDIR  = $(HOME)/.local/bin

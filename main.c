@@ -1,7 +1,9 @@
 #include "main.h"
 #include "drw.h"
+#include "src/modules/sigr1.h"
 #include "src/modules/wks.h"
 #include <X11/Xlib.h>
+#include <stdio.h>
 
 static int wait_event(Display *dpy) {
   if (XPending(dpy))
@@ -105,6 +107,7 @@ static int default_rt(Display *dpy, Window win, int *win_w, int win_h) {
   Visual *vis = DefaultVisual(dpy, screen);
   Colormap cmap = DefaultColormap(dpy, screen);
   XftFont *font = XftFontOpenName(dpy, screen, FONT);
+  ColorScheme col = {0};
 
   XMapRaised(dpy, win);
 
@@ -114,22 +117,28 @@ static int default_rt(Display *dpy, Window win, int *win_w, int win_h) {
       XCreatePixmap(dpy, win, *win_w, win_h, DefaultDepth(dpy, screen));
   XftDraw *xdraw = XftDrawCreate(dpy, buf, vis, cmap);
 
-  XftColor title_color, value_color;
-  XftColorAllocName(dpy, vis, cmap, "#ffffff", &title_color);
-  XftColorAllocName(dpy, vis, cmap, "#ffffff", &value_color);
-
   XEvent ev = {0};
   int c_w = *win_w, c_x = 0;
+
+  load_colors(dpy, &col);
+  signal(SIGUSR1, handle_sigusr1);
 
   int running = 1;
   int first = 1;
 
   MInfo m = {0, 0, *win_w};
 
+  XftColor title_color, value_color;
+
   while (running) {
     if (!first)
       wait_event(dpy);
     first = 0;
+
+    if (reload_colors) {
+      reload_colors = 0;
+      load_colors(dpy, &col);
+    }
 
     m = move_to_monitor(dpy, win);
 
@@ -173,7 +182,7 @@ static int default_rt(Display *dpy, Window win, int *win_w, int win_h) {
 
     get_hour(t, sizeof(t), 0);
 
-    XSetForeground(dpy, gc, 0x151515);
+    XSetForeground(dpy, gc, col.background);
     XFillRectangle(dpy, buf, gc, 0, 0, m.w, win_h);
 
     int l_ls = (current >= 5) ? current + 1 : 5;
@@ -193,12 +202,16 @@ static int default_rt(Display *dpy, Window win, int *win_w, int win_h) {
 
       XftColor w_color;
 
-      if (current - 1 == i)
-        XftColorAllocName(dpy, vis, cmap, "#000000", &w_color);
-      else
-        XftColorAllocName(dpy, vis, cmap, "#ffffff", &w_color);
+      if (current - 1 == i) {
+        xcolor_to_xftcolor(dpy, vis, cmap, col.colors[0], &w_color);
+      } else {
+        xcolor_to_xftcolor(dpy, vis, cmap, col.foreground, &w_color);
+      }
 
-      XSetForeground(dpy, gc, 0xffffff);
+      xcolor_to_xftcolor(dpy, vis, cmap, col.foreground, &title_color);
+      xcolor_to_xftcolor(dpy, vis, cmap, col.foreground, &value_color);
+
+      XSetForeground(dpy, gc, col.colors[1]);
       XFillRectangle(dpy, buf, gc, pos_t * (i * 2), 0, ac_rw, ac_rh);
       draw_text(dpy, xdraw, font, &w_color, pos_t * (i * 2), text_y, label, 0);
     }
