@@ -45,6 +45,26 @@ void xcolor_to_xftcolor(Display *dpy, Visual *vis, Colormap cmap,
   XftColorAllocValue(dpy, vis, cmap, &rc, xft);
 }
 
+void
+load_xft_scheme(Display *dpy, Visual *vis, Colormap cmap, ColorScheme *col, XftScheme *scheme)
+{
+    xcolor_to_xftcolor(dpy, vis,  cmap, col->foreground, &scheme->foreground);
+    
+    xcolor_to_xftcolor(dpy, vis,  cmap, col->colors[0], &scheme->active);
+
+    xcolor_to_xftcolor(dpy, vis,  cmap, col->foreground, &scheme->title);
+}
+
+void
+free_xft_scheme(Display *dpy, Visual *vis, Colormap cmap, XftScheme *scheme)
+{
+    XftColorFree(dpy, vis, cmap, &scheme->foreground);
+
+    XftColorFree(dpy, vis, cmap, &scheme->active);
+
+    XftColorFree(dpy, vis, cmap, &scheme->title);
+}
+
 void draw_wrapped_text(Display *dpy, XftDraw *xdraw, XftFont *font,
                        XftColor *color, int x, int y, int max_width,
                        const char *text) {

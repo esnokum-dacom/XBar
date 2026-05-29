@@ -5,6 +5,6 @@
 
 static volatile int reload_colors;
 
-void handle_sigusr1(int sig);
+void handle_sigusr1();
 
 #endif

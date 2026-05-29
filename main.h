@@ -22,7 +22,7 @@ typedef struct {
 } MInfo;
 
 /* defines */
-#define FONT "monospace:size=12"
+#define FONT "JetBrainsMono Nerd Font:size=12"
 #define BAR_HEIGHT 22
 
 #define STROINT 1
@@ -32,6 +32,6 @@ typedef struct {
 static int wait_event(Display *dpy);
 Window create_win(Display *dpy, int win_w, int win_h);
 static int default_rt(Display *dpy, Window win, int *win_w, int win_h);
-MInfo move_to_monitor(Display *dpy, Window win);
+MInfo move_to_monitor(Display *dpy);
 
 #endif
