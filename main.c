@@ -222,9 +222,9 @@ default_rt(Display *dpy, Window win, int *win_w, int win_h)
         XFillRectangle(dpy, buf, gc, pos_t * (i * 2), 0, ac_rw, ac_rh);
         draw_text(dpy, xdraw, font, &scheme.title, pos_t * (i * 2), text_y, label, 0);
       }
-      draw_text(dpy, xdraw, font, &scheme.title, (m.w / 2.17), text_y, b, 3);
+      draw_text(dpy, xdraw, font, &scheme.title, (m.w / 2.3), text_y, b, 3);
       draw_text(dpy, xdraw, font, &scheme.title, (m.w / 2), text_y, t, 3);
-      draw_text(dpy, xdraw, font, &scheme.title, (m.w / 1.8), text_y, c, 1);
+      draw_text(dpy, xdraw, font, &scheme.title, (m.w / 1.7), text_y, c, 1);
     
       XCopyArea(dpy, buf, win, gc, 0, 0, m.w, win_h, 0, 0);
       XMapWindow(dpy, win);
