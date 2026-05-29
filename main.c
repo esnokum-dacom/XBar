@@ -209,18 +209,20 @@ default_rt(Display *dpy, Window win, int *win_w, int win_h)
           if (STROINT)
             snprintf(label, sizeof(label), STRACT);
           else
-            snprintf(label, sizeof(label), "[%d]", i + 1);
+            snprintf(label, sizeof(label), " %d ", i + 1);
         else
-          snprintf(label, sizeof(label), "[%d]", i + 1);
+          snprintf(label, sizeof(label), " %d ", i + 1);
     
         XftColor *w_color = (current - 1 == i) ? &scheme.active : &scheme.foreground;
     
-        int ac_rw = (current - 1 == i) ? 30 : 0;
-        int ac_rh = (current - 1 == i) ? BAR_HEIGHT : 0;
+        int ac_rw = (current - 1 == i) ? 30 : 30;
+        int ac_rh = (current - 1 == i) ? BAR_HEIGHT : BAR_HEIGHT;
     
-        XSetForeground(dpy, gc, col.colors[1]);
-        XFillRectangle(dpy, buf, gc, pos_t * (i * 2), 0, ac_rw, ac_rh);
-        draw_text(dpy, xdraw, font, &scheme.title, pos_t * (i * 2), text_y, label, 0);
+        unsigned long ac_cc = (current - 1 == i) ? col.colors[1] : col.colors[15];
+
+        XSetForeground(dpy, gc, ac_cc);
+        XFillRectangle(dpy, buf, gc, (pos_t + 1) * (i * 2), 0, ac_rw, ac_rh);
+        draw_text(dpy, xdraw, font, &scheme.active, (pos_t + 1) * (i * 2), text_y, label, 0);
       }
       draw_text(dpy, xdraw, font, &scheme.title, (m.w / 2.3), text_y, b, 3);
       draw_text(dpy, xdraw, font, &scheme.title, (m.w / 2), text_y, t, 3);

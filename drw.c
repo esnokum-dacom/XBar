@@ -11,9 +11,14 @@ unsigned long hex_to_xcolor(Display *dpy, const char *hex) {
 void load_colors(Display *dpy, ColorScheme *col) {
   unsigned long fg = hex_to_xcolor(dpy, "#ffffff");
   unsigned long bg = hex_to_xcolor(dpy, "#151515");
+  unsigned long c1 = hex_to_xcolor(dpy, "#303030");
+  unsigned long c2 = hex_to_xcolor(dpy, "#101010");
 
   col->background = bg;
   col->foreground = fg;
+  col->colors[1] = c1;
+  col->colors[2] = c2;
+
   for (int i = 0; i < 16; i++)
     col->colors[i] = (i == 0) ? bg : fg;
 
@@ -33,6 +38,8 @@ void load_colors(Display *dpy, ColorScheme *col) {
 
   col->background = col->colors[0];
   col->foreground = col->colors[15];
+  col->colors[1] = col->colors[1];
+  col->colors[2] = col->colors[2];
 }
 
 void xcolor_to_xftcolor(Display *dpy, Visual *vis, Colormap cmap,

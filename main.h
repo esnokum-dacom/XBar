@@ -26,7 +26,7 @@ typedef struct {
 #define BAR_HEIGHT 22
 
 #define STROINT 1
-#define STRACT "[~]"
+#define STRACT " ~ "
 
 /* functions */
 static int wait_event(Display *dpy);
